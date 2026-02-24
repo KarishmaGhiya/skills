@@ -4,25 +4,25 @@
     "sessionStart": [
       {
         "type": "command",
-        "bash": ".github/hooks/continual-learning/scripts/load-session-start.sh",
+        "bash": ".github/hooks/continual-learning/learn.sh sessionStart",
         "cwd": ".",
-        "timeoutSec": 10
+        "timeoutSec": 5
       }
     ],
     "postToolUse": [
       {
         "type": "command",
-        "bash": ".github/hooks/continual-learning/scripts/track-tool-use.sh",
+        "bash": ".github/hooks/continual-learning/learn.sh postToolUse",
         "cwd": ".",
-        "timeoutSec": 5
+        "timeoutSec": 3
       }
     ],
     "sessionEnd": [
       {
         "type": "command",
-        "bash": ".github/hooks/continual-learning/scripts/reflect-session-end.sh",
+        "bash": ".github/hooks/continual-learning/learn.sh sessionEnd",
         "cwd": ".",
-        "timeoutSec": 15
+        "timeoutSec": 10
       }
     ]
   }

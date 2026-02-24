@@ -6,117 +6,70 @@ tags: ['learning', 'memory', 'reflection', 'productivity', 'featured']
 
 # Continual Learning Hook
 
-Enable your AI coding agent to learn from every session. This hook set implements the **continual learning loop** — capturing tool outcomes, reflecting on patterns, and persisting knowledge so each session starts smarter than the last.
+Your agent forgets everything between sessions. This hook fixes that.
 
-## The Problem
+## Quick Start
 
-AI coding agents start every session from scratch. You correct them, they adapt — then the session ends and the knowledge is lost. Next session: same mistakes, same corrections, infinite loop.
-
-## The Solution
-
-```
-Experience → Capture → Reflect → Persist → Apply
+```bash
+cp -r hooks/continual-learning .github/hooks/
 ```
 
-This hook set closes the loop by:
+That's it. The hook auto-initializes on first session — no config, no setup, no manual steps.
 
-1. **Loading context** at session start — past session summaries, accumulated learnings
-2. **Tracking outcomes** during the session — which tools succeed, which fail
-3. **Reflecting** at session end — analyzing patterns, identifying repeated failures
-4. **Persisting** learnings to a SQLite database and optional memory file
+## What It Does
 
-## How It Works
+- **Session start** — Loads learnings from previous sessions (global + this repo)
+- **During session** — Tracks tool outcomes silently
+- **Session end** — Reflects on patterns, stores insights, compacts old data
 
-### Session Start (`load-session-start.sh`)
-- Queries `~/.copilot/session-store.db` for recent sessions in the current project
-- Loads accumulated learnings from `~/.copilot/continual-learning.db`
-- Surfaces the local `.github/memory/learnings.md` file if present
+## Two-Tier Memory
 
-### During Session (`track-tool-use.sh`)
-- Records every tool invocation and its result (success/failure)
-- Builds a tool usage history in `~/.copilot/continual-learning.db`
-- Lightweight — adds <5ms per tool call
+| Scope | Location | What goes here |
+|-------|----------|----------------|
+| **Global** | `~/.copilot/learnings.db` | Tool patterns, cross-project insights |
+| **Local** | `.copilot-memory/learnings.db` | Repo conventions, project-specific mistakes |
 
-### Session End (`reflect-session-end.sh`)
-- Analyzes tool outcomes: total usage, failure rate, top tools
-- Detects repeated failure patterns (same tool failing multiple times)
-- Persists failure patterns as learnings
-- Appends a session summary to `.github/memory/learnings.md`
-- Cleans up data older than 7 days
+Global learnings follow you everywhere. Local learnings stay with the project.
 
-## Installation
+Both auto-create on first run. Local memory only activates inside a git repo.
 
-1. Copy the hook folder to your repository:
-   ```bash
-   cp -r hooks/continual-learning .github/hooks/
-   ```
+## How It Compounds
 
-2. Ensure scripts are executable:
-   ```bash
-   chmod +x .github/hooks/continual-learning/scripts/*.sh
-   ```
+| Time | Effect |
+|------|--------|
+| Day 1 | Agent starts fresh — hook begins observing |
+| Week 2 | Failure patterns detected, surfaced at session start |
+| Month 2 | Rich context loaded — agent avoids known pitfalls |
 
-3. Optionally create a memory file for project-specific learnings:
-   ```bash
-   mkdir -p .github/memory
-   echo "# Project Learnings" > .github/memory/learnings.md
-   ```
+Old low-value learnings decay automatically (60-day TTL, low hit count). High-value learnings persist and rank higher.
 
-4. Commit to your repository's default branch.
+## Adding Learnings Manually
 
-## Configuration
-
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `SKIP_CONTINUAL_LEARNING` | unset | Set to `true` to disable entirely |
-| `MEMORY_FILE` | `.github/memory/learnings.md` | Path to the project memory file |
-
-## Database Schema
-
-The hook creates `~/.copilot/continual-learning.db` with two tables:
+The agent can also write learnings directly using its built-in `store_memory` tool or SQL:
 
 ```sql
--- Tool invocation history (auto-cleaned after 7 days)
-CREATE TABLE tool_outcomes (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    session_id TEXT,
-    tool_name TEXT,
-    result_type TEXT,
-    timestamp INTEGER,
-    recorded_at TEXT DEFAULT (datetime('now'))
-);
-
--- Persistent learnings extracted from sessions
-CREATE TABLE learnings (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    category TEXT,      -- 'failure_pattern', 'correction', 'preference'
-    content TEXT,       -- The actual learning
-    source TEXT,        -- Where it came from (session ID, timestamp)
-    created_at TEXT DEFAULT (datetime('now'))
-);
+-- Agent writes a repo-specific learning
+INSERT INTO learnings (scope, category, content, source)
+VALUES ('local', 'mistake', 'Use semantic_configuration_name= not semantic_configuration=', 'user_correction');
 ```
 
-## The Compound Effect
+## Architecture
 
-| Week | State |
-|------|-------|
-| Week 1 | Agent starts fresh each session, repeats mistakes |
-| Week 4 | Database has failure patterns, agent avoids known issues |
-| Week 12 | Rich history of learnings, agent rarely makes previously-seen mistakes |
+```
+learn.sh <event>          ← Single script handles all lifecycle events
+    │
+    ├── sessionStart      → Query both DBs, surface top learnings
+    ├── postToolUse       → Log tool name + result (3ms overhead)
+    └── sessionEnd        → Analyze patterns, persist insights, compact old data
+```
 
-## Combining with Agent Memory
+## Disable
 
-If your coding agent supports a `store_memory` tool or similar, the learnings from this hook can inform what the agent persists. The hook provides the **infrastructure** (capture, store, surface) while the agent provides the **intelligence** (deciding what's worth remembering).
+```bash
+export SKIP_CONTINUAL_LEARNING=true
+```
 
 ## Requirements
 
-- `sqlite3` for database operations
-- `jq` for JSON parsing (optional, gracefully degrades)
-- Bash 4+ with standard Unix tools
-
-## Privacy
-
-- Tool outcomes are stored locally in `~/.copilot/continual-learning.db`
-- No tool arguments or prompt content is logged — only tool names and result types
-- Memory file is project-local and should be in `.gitignore` if sensitive
-- All data stays local — no external network calls
+- `sqlite3` (pre-installed on macOS and most Linux)
+- `jq` (optional — gracefully degrades without it)
