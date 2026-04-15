@@ -184,10 +184,10 @@ Iris
 ### Combining vectors
 
 ```kql
-// Weighted vector combination (e.g., word1 * 0.5 + word2 * 0.3 + word3 * 0.2)
-let v1 = toscalar(Vecs | where Word == "hello" | project Vec);
-let v2 = toscalar(Vecs | where Word == "world" | project Vec);
-let v3 = toscalar(Vecs | where Word == "test" | project Vec);
+// try it! — weighted vector combination from Iris feature vectors
+let v1 = toscalar(Iris | where Class == "Iris-setosa" | take 1 | project pack_array(SepalLength, SepalWidth, PetalLength, PetalWidth));
+let v2 = toscalar(Iris | where Class == "Iris-versicolor" | take 1 | project pack_array(SepalLength, SepalWidth, PetalLength, PetalWidth));
+let v3 = toscalar(Iris | where Class == "Iris-virginica" | take 1 | project pack_array(SepalLength, SepalWidth, PetalLength, PetalWidth));
 let combined = series_add(
     series_add(
         series_multiply(v1, repeat(0.5, array_length(v1))),
@@ -195,6 +195,7 @@ let combined = series_add(
     ),
     series_multiply(v3, repeat(0.2, array_length(v3)))
 );
+print combined
 ```
 
 ### Performance consideration
@@ -237,9 +238,11 @@ Vecs
 ### Point-in-polygon
 
 ```kql
-// Check if a point is inside a polygon
-| where geo_point_in_polygon(Longitude, Latitude,
-    dynamic({"type":"Polygon","coordinates":[[[lon1,lat1],[lon2,lat2],...,[lon1,lat1]]]}))
+// try it! — check if storm events occurred within a polygon around NYC
+StormEvents
+| where geo_point_in_polygon(BeginLon, BeginLat,
+    dynamic({"type":"Polygon","coordinates":[[[-74.05,40.65],[-73.85,40.65],[-73.85,40.85],[-74.05,40.85],[-74.05,40.65]]]}))
+| summarize count() by EventType
 ```
 
 Note: `geo_point_in_polygon` is a **scalar function**, not a plugin. It works on free clusters. Don't try to `evaluate` it as a plugin — use it directly in `| where` or `| extend`.
@@ -281,14 +284,12 @@ StormEvents
 ### IP geolocation
 
 ```kql
-// Lookup IP addresses against a geo table
-| evaluate ipv4_lookup(IpGeoTable, ClientIP, IpRange)
-
-// Check if IP is in a range
-| where ipv4_is_in_range(ClientIP, "10.0.0.0/8")
-
-// Compare two IPs for subnet membership
+// try it! — check if IPs are in a range (using inline test data)
+datatable(ClientIP:string) ["10.1.2.3", "172.16.5.6", "192.168.1.1", "8.8.8.8"]
 | where ipv4_is_in_any_range(ClientIP, dynamic(["10.0.0.0/8", "172.16.0.0/12"]))
+
+// Check if an IP is in a specific subnet
+print is_private = ipv4_is_in_range("10.1.2.3", "10.0.0.0/8")
 ```
 
 ---

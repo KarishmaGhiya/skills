@@ -18,13 +18,13 @@ Reference for schema exploration commands. Use these to understand a database's 
 | project TableName
 
 // Table schema (column names, types, folder)
-.show table MyTable schema as json
+.show table StormEvents schema as json
 
 // Table schema as CSL (for scripting)
-.show table MyTable cslschema
+.show table StormEvents cslschema
 
 // Compact column listing (CSL format)
-.show table MyTable cslschema
+.show table StormEvents cslschema
 | project TableName, Schema
 ```
 
@@ -32,17 +32,17 @@ Reference for schema exploration commands. Use these to understand a database's 
 
 ```kql
 // Column cardinality and statistics (sample-based)
-.show table MyTable column statistics
+.show table StormEvents column statistics
 
 // Quick column profiling via query
-MyTable
+StormEvents
 | take 10000
 | summarize
     Rows = count(),
-    Nulls = countif(isnull(ColumnName)),
-    Distinct = dcount(ColumnName),
-    MinVal = min(ColumnName),
-    MaxVal = max(ColumnName)
+    Nulls = countif(isnull(BeginLat)),
+    Distinct = dcount(State),
+    MinVal = min(StartTime),
+    MaxVal = max(StartTime)
 ```
 
 ---
@@ -57,11 +57,11 @@ MyTable
 | project Name, Parameters, Body = substring(Body, 0, 100), DocString, Folder
 
 // Full function definition
-.show function MyFunction
+.show function MyFunction2
 
 // Functions in a folder
 .show functions
-| where Folder == "Analytics"
+| where Folder == "Demo"
 ```
 
 ### Materialized View Discovery
@@ -72,10 +72,10 @@ MyTable
 | project Name, SourceTable, Query = substring(Query, 0, 100), IsEnabled, IsHealthy
 
 // View statistics (lag, processed records)
-.show materialized-view MyView statistics
+.show materialized-view DailyCovid19 statistics
 
 // View extents
-.show materialized-view MyView extents
+.show materialized-view DailyCovid19 extents
 | summarize ExtentCount = count(), TotalRows = sum(RowCount)
 ```
 
@@ -85,16 +85,16 @@ MyTable
 
 ```kql
 // Retention policies
-.show table MyTable policy retention
+.show table StormEvents policy retention
 
 // Caching policies
-.show table MyTable policy caching
+.show table StormEvents policy caching
 
 // Streaming ingestion policy
-.show table MyTable policy streamingingestion
+.show table StormEvents policy streamingingestion
 
 // Update policies
-.show table MyTable policy update
+.show table StormEvents policy update
 
 // All major policies for a table (run individually):
 // retention, caching, streamingingestion, update, merge, sharding
@@ -112,20 +112,20 @@ MyTable
 | project TableName, TableType, Folder, ConnectionStrings
 
 // External table schema
-.show external table MyExternalTable schema as json
+.show external table TaxiRides schema as json
 ```
 
 ### Ingestion Mapping Discovery
 
 ```kql
 // CSV mappings for a table
-.show table MyTable ingestion csv mappings
+.show table StormEvents ingestion csv mappings
 
 // JSON mappings for a table
-.show table MyTable ingestion json mappings
+.show table StormEvents ingestion json mappings
 
 // All mappings for a table
-.show table MyTable ingestion mappings
+.show table StormEvents ingestion mappings
 ```
 
 ---
@@ -137,7 +137,7 @@ MyTable
 .show graph_models
 
 // Show a specific graph model definition
-.show graph_model MyGraphModel
+.show graph_model Simple
 
 // List graph snapshots
 .show graph_snapshots
@@ -149,10 +149,10 @@ MyTable
 
 ```kql
 // Database-level principals
-.show database MyDatabase principals
+.show database Samples principals
 
 // Table-level principals
-.show table MyTable principals
+.show table StormEvents principals
 
 // Current identity
 print CurrentUser = current_principal(), Cluster = current_cluster_endpoint()
@@ -204,7 +204,7 @@ When data isn't showing up after ingestion, check for failures (retained for 14 
 
 // Filter to a specific table
 .show ingestion failures
-| where Table == "MyTable"
+| where Table == "StormEvents"
 | where FailedOn > ago(1d)
 | project FailedOn, Table, FailureKind, ErrorCode, Details
 | order by FailedOn desc
@@ -286,4 +286,4 @@ Built-in workload groups:
 | Queries being rejected/throttled | `.show workload_group default` | Rate limits, concurrent request caps |
 | Cluster unresponsive | `.show diagnostics` | Node health, memory pressure |
 | Merges falling behind | `.show capacity extents-merge` | `Remaining` = 0 |
-| Materialized views stale | `.show materialized-view MyView statistics` | Materialization lag |
+| Materialized views stale | `.show materialized-view DailyCovid19 statistics` | Materialization lag |
