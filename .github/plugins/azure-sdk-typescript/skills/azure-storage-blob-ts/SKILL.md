@@ -37,22 +37,15 @@ AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
 
 ```typescript
 import { BlobServiceClient } from "@azure/storage-blob";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
+const credential = process.env.NODE_ENV === "development"
+  ? new DefaultAzureCredential()                          // local dev — uses CLI/VS credentials
+  : new ManagedIdentityCredential();                      // production — deterministic, no fallback chain
 const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME!;
 const client = new BlobServiceClient(
   `https://${accountName}.blob.core.windows.net`,
-  new DefaultAzureCredential()
-);
-```
-
-### Connection String
-
-```typescript
-import { BlobServiceClient } from "@azure/storage-blob";
-
-const client = BlobServiceClient.fromConnectionString(
-  process.env.AZURE_STORAGE_CONNECTION_STRING!
+  credential
 );
 ```
 
@@ -68,19 +61,6 @@ const sharedKeyCredential = new StorageSharedKeyCredential(accountName, accountK
 const client = new BlobServiceClient(
   `https://${accountName}.blob.core.windows.net`,
   sharedKeyCredential
-);
-```
-
-### SAS Token
-
-```typescript
-import { BlobServiceClient } from "@azure/storage-blob";
-
-const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME!;
-const sasToken = process.env.AZURE_STORAGE_SAS_TOKEN!; // starts with "?"
-
-const client = new BlobServiceClient(
-  `https://${accountName}.blob.core.windows.net${sasToken}`
 );
 ```
 
