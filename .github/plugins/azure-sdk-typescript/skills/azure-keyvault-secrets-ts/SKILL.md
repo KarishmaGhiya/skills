@@ -30,10 +30,11 @@ AZURE_KEYVAULT_NAME=<vault-name>
 ## Authentication
 
 ```typescript
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 import { SecretClient } from "@azure/keyvault-secrets";
-
-const credential = new DefaultAzureCredential();
+const credential = process.env.NODE_ENV === "development"
+  ? new DefaultAzureCredential()                          // local dev — uses CLI/VS credentials
+  : new ManagedIdentityCredential();                      // production — deterministic, no fallback chain
 const vaultUrl = `https://${process.env.AZURE_KEYVAULT_NAME}.vault.azure.net`;
 
 const keyClient = new KeyClient(vaultUrl, credential);
@@ -265,7 +266,7 @@ try {
 
 ## Best Practices
 
-1. **Use DefaultAzureCredential** - Works across dev and production
+1. **Use specific credentials** - Use DefaultAzureCredential only when running locally, and a specific credential in production (e.g., ManagedIdentityCredential)
 2. **Enable soft-delete** - Required for production vaults
 3. **Set expiration dates** - On both keys and secrets
 4. **Use key rotation policies** - Automate key rotation

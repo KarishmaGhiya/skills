@@ -38,15 +38,15 @@ COSMOS_KEY=<account-key>
 
 ## Authentication
 
-### AAD with DefaultAzureCredential (Recommended)
+### AAD with Credential (Recommended)
 
 ```typescript
 import { CosmosClient } from "@azure/cosmos";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const client = new CosmosClient({
   endpoint: process.env.COSMOS_ENDPOINT!,
-  aadCredentials: new DefaultAzureCredential(),
+  aadCredentials: process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential(),
 });
 ```
 
@@ -411,7 +411,7 @@ import {
 
 ## Best Practices
 
-1. **Use AAD authentication** — Prefer `DefaultAzureCredential` over keys
+1. **Use AAD authentication** — Prefer TokenCredential (e.g., `DefaultAzureCredential` or `ManagedIdentityCredential`) over keys.  Use `DefaultAzureCredential` only for local development and `ManagedIdentityCredential`or a specific credential in production.
 2. **Always use parameterized queries** — Prevents injection, improves plan caching
 3. **Specify partition key** — Avoid cross-partition queries when possible
 4. **Use bulk operations** — For multiple writes, use `executeBulkOperations`

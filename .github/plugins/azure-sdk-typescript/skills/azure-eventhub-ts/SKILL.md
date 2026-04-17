@@ -36,11 +36,11 @@ STORAGE_CONTAINER_NAME=checkpoints
 
 ```typescript
 import { EventHubProducerClient, EventHubConsumerClient } from "@azure/event-hubs";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const fullyQualifiedNamespace = process.env.EVENTHUB_NAMESPACE!;
 const eventHubName = process.env.EVENTHUB_NAME!;
-const credential = new DefaultAzureCredential();
+const credential = process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential();
 
 // Producer
 const producer = new EventHubProducerClient(fullyQualifiedNamespace, eventHubName, credential);

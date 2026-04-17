@@ -206,14 +206,14 @@ logs.setGlobalLoggerProvider(loggerProvider);
 ## Custom Logs Ingestion
 
 ```typescript
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 import { LogsIngestionClient, isAggregateLogsUploadError } from "@azure/monitor-ingestion";
 
 const endpoint = "https://<dce>.ingest.monitor.azure.com";
 const ruleId = "<data-collection-rule-id>";
 const streamName = "Custom-MyTable_CL";
 
-const client = new LogsIngestionClient(endpoint, new DefaultAzureCredential());
+const client = new LogsIngestionClient(endpoint, process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential());
 
 const logs = [
   {
