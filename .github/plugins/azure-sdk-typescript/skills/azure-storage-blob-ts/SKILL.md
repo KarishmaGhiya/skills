@@ -27,13 +27,11 @@ npm install @azure/storage-blob @azure/identity
 ```bash
 AZURE_STORAGE_ACCOUNT_NAME=<account-name>
 AZURE_STORAGE_ACCOUNT_KEY=<account-key>
-# OR connection string
-AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
 ```
 
 ## Authentication
 
-### DefaultAzureCredential (Recommended)
+### Entra ID TokenCredential (Recommended)
 
 ```typescript
 import { BlobServiceClient } from "@azure/storage-blob";
@@ -443,7 +441,7 @@ import {
 
 ## Best Practices
 
-1. **Use DefaultAzureCredential** — Prefer AAD over connection strings/keys
+1. **Use Entra ID TokenCredential** — Prefer Entra ID TokenCredential over connection strings/keys. Use a specific credential (`ManagedIdentityCredential` or `WorkloadIdentityCredential`) in production. Use `DefaultAzureCredential` only for local development.
 2. **Use streaming for large files** — `uploadStream`/`downloadToFile` for files > 256MB
 3. **Set appropriate content types** — Use `setHTTPHeaders` for correct MIME types
 4. **Use SAS tokens for client access** — Generate short-lived tokens for browser uploads
@@ -462,5 +460,5 @@ import {
 | `downloadToBuffer()` | ✅ | ❌ |
 | `uploadData()` | ✅ | ✅ |
 | SAS generation | ✅ | ❌ |
-| DefaultAzureCredential | ✅ | ❌ |
+| Entra ID TokenCredential | ✅ | ❌ |
 | Anonymous/SAS access | ✅ | ✅ |

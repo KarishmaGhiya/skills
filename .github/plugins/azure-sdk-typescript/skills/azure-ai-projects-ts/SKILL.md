@@ -34,11 +34,11 @@ MODEL_DEPLOYMENT_NAME=gpt-4o
 
 ```typescript
 import { AIProjectClient } from "@azure/ai-projects";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const client = new AIProjectClient(
   process.env.AZURE_AI_PROJECT_ENDPOINT!,
-  new DefaultAzureCredential()
+  (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential())
 );
 ```
 

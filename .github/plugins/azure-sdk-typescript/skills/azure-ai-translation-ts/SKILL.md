@@ -156,12 +156,12 @@ if (!isUnexpected(response)) {
 
 ```typescript
 import DocumentTranslationClient from "@azure-rest/ai-translation-document";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const endpoint = "https://<translator>.cognitiveservices.azure.com";
 
 // TokenCredential
-const client = DocumentTranslationClient(endpoint, new DefaultAzureCredential());
+const client = DocumentTranslationClient(endpoint, (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential()));
 
 // API Key
 const client2 = DocumentTranslationClient(endpoint, { key: "<api-key>" });
@@ -288,3 +288,4 @@ import type {
 3. **Use SAS tokens** - For document translation, use time-limited SAS URLs
 4. **Handle errors** - Always check `isUnexpected(response)` before accessing body
 5. **Regional endpoints** - Use regional endpoints for lower latency
+6. **Use a specific EntraID token credential for production** — Never hardcode API keys. Use `DefaultAzureCredential` only for development and a specific token credential such as `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production.

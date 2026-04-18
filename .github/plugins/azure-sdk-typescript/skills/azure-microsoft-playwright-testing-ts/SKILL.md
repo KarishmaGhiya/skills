@@ -49,14 +49,14 @@ az login
 // playwright.service.config.ts
 import { defineConfig } from "@playwright/test";
 import { createAzurePlaywrightConfig, ServiceOS } from "@azure/playwright";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 import config from "./playwright.config";
 
 export default defineConfig(
   config,
   createAzurePlaywrightConfig(config, {
     os: ServiceOS.LINUX,
-    credential: new DefaultAzureCredential(),
+    credential: (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential()),
   })
 );
 ```
@@ -83,7 +83,7 @@ export default defineConfig(
 // playwright.service.config.ts
 import { defineConfig } from "@playwright/test";
 import { createAzurePlaywrightConfig, ServiceOS } from "@azure/playwright";
-import { DefaultAzureCredential } from "@azure/identity";
+import { ManagedIdentityCredential } from "@azure/identity";
 import config from "./playwright.config";
 
 export default defineConfig(
@@ -92,7 +92,7 @@ export default defineConfig(
     os: ServiceOS.LINUX,
     connectTimeout: 30000,
     exposeNetwork: "<loopback>",
-    credential: new DefaultAzureCredential(),
+    credential: new ManagedIdentityCredential(),
   })
 );
 ```
@@ -108,14 +108,14 @@ npx playwright test --config=playwright.service.config.ts --workers=20
 ```typescript
 import { defineConfig } from "@playwright/test";
 import { createAzurePlaywrightConfig, ServiceOS } from "@azure/playwright";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 import config from "./playwright.config";
 
 export default defineConfig(
   config,
   createAzurePlaywrightConfig(config, {
     os: ServiceOS.LINUX,
-    credential: new DefaultAzureCredential(),
+    credential: (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential()),
   }),
   {
     reporter: [
@@ -278,14 +278,14 @@ export default defineConfig(
 
 ```typescript
 import { createAzurePlaywrightConfig, ServiceOS } from "@azure/playwright";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 export default defineConfig(
   config,
   createAzurePlaywrightConfig(config, {
     os: ServiceOS.LINUX,
     connectTimeout: 30000,
-    credential: new DefaultAzureCredential(),
+    credential: (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential()),
   }),
   {
     reporter: [

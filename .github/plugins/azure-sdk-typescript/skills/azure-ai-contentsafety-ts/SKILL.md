@@ -41,15 +41,15 @@ const client = ContentSafetyClient(
 );
 ```
 
-### DefaultAzureCredential
+### EntraID Token Credential
 
 ```typescript
 import ContentSafetyClient from "@azure-rest/ai-content-safety";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const client = ContentSafetyClient(
   process.env.CONTENT_SAFETY_ENDPOINT!,
-  new DefaultAzureCredential()
+  (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential())
 );
 ```
 

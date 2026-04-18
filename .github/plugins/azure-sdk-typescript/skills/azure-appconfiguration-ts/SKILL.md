@@ -37,12 +37,12 @@ AZURE_APPCONFIG_CONNECTION_STRING=Endpoint=https://...;Id=...;Secret=...
 
 ```typescript
 import { AppConfigurationClient } from "@azure/app-configuration";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 // DefaultAzureCredential (recommended)
 const client = new AppConfigurationClient(
   process.env.AZURE_APPCONFIG_ENDPOINT!,
-  new DefaultAzureCredential()
+  (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential())
 );
 
 // Connection string
@@ -124,11 +124,11 @@ await client.setReadOnly({ key: "myKey", label: "prod" }, false);
 
 ```typescript
 import { load } from "@azure/app-configuration-provider";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const appConfig = await load(
   process.env.AZURE_APPCONFIG_ENDPOINT!,
-  new DefaultAzureCredential(),
+  (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential()),
   {
     selectors: [
       { keyFilter: "app:*", labelFilter: "production" },
@@ -177,7 +177,7 @@ app.use((req, res, next) => {
 const appConfig = await load(endpoint, credential, {
   selectors: [{ keyFilter: "app:*" }],
   keyVaultOptions: {
-    credential: new DefaultAzureCredential(),
+    credential: (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential()),
     secretRefreshIntervalInMs: 7200_000,  // 2 hours
   },
 });

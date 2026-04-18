@@ -27,21 +27,8 @@ npm install @azure/storage-file-share @azure/identity
 ```bash
 AZURE_STORAGE_ACCOUNT_NAME=<account-name>
 AZURE_STORAGE_ACCOUNT_KEY=<account-key>
-# OR connection string
-AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
-```
 
 ## Authentication
-
-### Connection String (Simplest)
-
-```typescript
-import { ShareServiceClient } from "@azure/storage-file-share";
-
-const client = ShareServiceClient.fromConnectionString(
-  process.env.AZURE_STORAGE_CONNECTION_STRING!
-);
-```
 
 ### StorageSharedKeyCredential (Node.js only)
 
@@ -58,16 +45,16 @@ const client = new ShareServiceClient(
 );
 ```
 
-### DefaultAzureCredential
+### Entra ID TokenCredential (Recommended)
 
 ```typescript
 import { ShareServiceClient } from "@azure/storage-file-share";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME!;
 const client = new ShareServiceClient(
   `https://${accountName}.file.core.windows.net`,
-  new DefaultAzureCredential()
+  (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential())
 );
 ```
 
@@ -474,14 +461,13 @@ import {
 
 ## Best Practices
 
-1. **Use connection strings for simplicity** — Easiest setup for development
-2. **Use DefaultAzureCredential for production** — Enable managed identity in Azure
-3. **Set quotas on shares** — Prevent unexpected storage costs
-4. **Use streaming for large files** — `uploadStream`/`downloadToFile` for files > 256MB
-5. **Use ranges for partial updates** — More efficient than full file replacement
-6. **Create snapshots before major changes** — Point-in-time recovery
-7. **Handle errors gracefully** — Check `RestError.statusCode` for specific handling
-8. **Use `*IfExists` methods** — For idempotent operations
+1. **Use Entra ID TokenCredential for production** — Enable managed identity in Azure
+2. **Set quotas on shares** — Prevent unexpected storage costs
+3. **Use streaming for large files** — `uploadStream`/`downloadToFile` for files > 256MB
+4. **Use ranges for partial updates** — More efficient than full file replacement
+5. **Create snapshots before major changes** — Point-in-time recovery
+6. **Handle errors gracefully** — Check `RestError.statusCode` for specific handling
+7. **Use `*IfExists` methods** — For idempotent operations
 
 ## Platform Differences
 
@@ -493,5 +479,5 @@ import {
 | `downloadToFile()` | ✅ | ❌ |
 | `downloadToBuffer()` | ✅ | ❌ |
 | SAS generation | ✅ | ❌ |
-| DefaultAzureCredential | ✅ | ❌ |
+| Entra ID TokenCredential | ✅ | ❌ |
 | Anonymous/SAS access | ✅ | ✅ |

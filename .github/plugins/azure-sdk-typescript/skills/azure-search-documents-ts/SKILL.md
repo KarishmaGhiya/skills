@@ -30,11 +30,11 @@ AZURE_SEARCH_ADMIN_KEY=<admin-key>  # Optional if using Entra ID
 
 ```typescript
 import { SearchClient, SearchIndexClient } from "@azure/search-documents";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const endpoint = process.env.AZURE_SEARCH_ENDPOINT!;
 const indexName = process.env.AZURE_SEARCH_INDEX_NAME!;
-const credential = new DefaultAzureCredential();
+const credential = (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential());
 
 // For searching
 const searchClient = new SearchClient(endpoint, indexName, credential);

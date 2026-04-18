@@ -27,34 +27,23 @@ npm install @azure/storage-queue @azure/identity
 ```bash
 AZURE_STORAGE_ACCOUNT_NAME=<account-name>
 AZURE_STORAGE_ACCOUNT_KEY=<account-key>
-# OR connection string
-AZURE_STORAGE_CONNECTION_STRING=DefaultEndpointsProtocol=https;AccountName=...
 ```
 
 ## Authentication
 
-### DefaultAzureCredential (Recommended)
+### Entra ID TokenCredential (Recommended)
 
 ```typescript
 import { QueueServiceClient } from "@azure/storage-queue";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME!;
 const client = new QueueServiceClient(
   `https://${accountName}.queue.core.windows.net`,
-  new DefaultAzureCredential()
+  (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential())
 );
 ```
 
-### Connection String
-
-```typescript
-import { QueueServiceClient } from "@azure/storage-queue";
-
-const client = QueueServiceClient.fromConnectionString(
-  process.env.AZURE_STORAGE_CONNECTION_STRING!
-);
-```
 
 ### StorageSharedKeyCredential (Node.js only)
 
@@ -508,7 +497,7 @@ import {
 
 ## Best Practices
 
-1. **Use DefaultAzureCredential** — Prefer AAD over connection strings/keys
+1. **Use Entra ID TokenCredential** — Prefer AAD over connection strings/keys. Use `DefaultAzureCredential`only in development and specific credential in production.
 2. **Always delete after processing** — Prevent duplicate processing
 3. **Handle poison messages** — Move failed messages to a dead-letter queue
 4. **Use appropriate visibility timeout** — Set based on expected processing time
@@ -523,6 +512,6 @@ import {
 |---------|---------|---------|
 | `StorageSharedKeyCredential` | ✅ | ❌ |
 | SAS generation | ✅ | ❌ |
-| DefaultAzureCredential | ✅ | ❌ |
+| Entra ID TokenCredential | ✅ | ❌ |
 | Anonymous/SAS access | ✅ | ✅ |
 | All message operations | ✅ | ✅ |

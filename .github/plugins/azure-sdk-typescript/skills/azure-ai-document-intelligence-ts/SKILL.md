@@ -29,15 +29,15 @@ DOCUMENT_INTELLIGENCE_API_KEY=<api-key>
 
 **Important**: This is a REST client. `DocumentIntelligence` is a **function**, not a class.
 
-### DefaultAzureCredential
+### EntraID Token Credential
 
 ```typescript
 import DocumentIntelligence from "@azure-rest/ai-document-intelligence";
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const client = DocumentIntelligence(
   process.env.DOCUMENT_INTELLIGENCE_ENDPOINT!,
-  new DefaultAzureCredential()
+  (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential())
 );
 ```
 

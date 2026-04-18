@@ -42,10 +42,9 @@ AZURE_LOG_LEVEL=info
 ### Microsoft Entra ID (Recommended)
 
 ```typescript
-import { DefaultAzureCredential } from "@azure/identity";
 import { VoiceLiveClient } from "@azure/ai-voicelive";
-
-const credential = new DefaultAzureCredential();
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
+const credential = (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential());
 const endpoint = "https://your-resource.cognitiveservices.azure.com";
 
 const client = new VoiceLiveClient(endpoint, credential);
@@ -78,10 +77,10 @@ VoiceLiveClient
 ## Quick Start
 
 ```typescript
-import { DefaultAzureCredential } from "@azure/identity";
+import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 import { VoiceLiveClient } from "@azure/ai-voicelive";
 
-const credential = new DefaultAzureCredential();
+const credential = (process.env.NODE_ENV === "development" ? new DefaultAzureCredential() : new ManagedIdentityCredential());
 const endpoint = process.env.AZURE_VOICELIVE_ENDPOINT!;
 
 // Create client and start session
@@ -452,7 +451,7 @@ const audioContext = new AudioContext({ sampleRate: 24000 });
 
 ## Best Practices
 
-1. **Always use `DefaultAzureCredential`** — Never hardcode API keys
+1. **Always use a specific EntraID token credential for production** — Never hardcode API keys. Use `DefaultAzureCredential` only for development and a specific  token credential such as `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production.
 2. **Set both modalities** — Include `["text", "audio"]` for voice assistants
 3. **Use Azure Semantic VAD** — Better turn detection than basic server VAD
 4. **Handle all error types** — Connection, auth, and protocol errors
