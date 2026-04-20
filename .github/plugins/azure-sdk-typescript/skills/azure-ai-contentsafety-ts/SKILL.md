@@ -41,7 +41,7 @@ const client = ContentSafetyClient(
 );
 ```
 
-### EntraID Token Credential
+### Microsoft Entra Token Credential
 
 ```typescript
 import ContentSafetyClient from "@azure-rest/ai-content-safety";

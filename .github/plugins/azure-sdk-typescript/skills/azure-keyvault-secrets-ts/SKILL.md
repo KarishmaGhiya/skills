@@ -266,7 +266,7 @@ try {
 
 ## Best Practices
 
-1. **Use specific credentials** - Use DefaultAzureCredential only when running locally, and a specific credential in production (e.g., ManagedIdentityCredential)
+1. **Use specific credentials** - Use `DefaultAzureCredential` only when running locally, and a specific credential in production (e.g., `ManagedIdentityCredential`)
 2. **Enable soft-delete** - Required for production vaults
 3. **Set expiration dates** - On both keys and secrets
 4. **Use key rotation policies** - Automate key rotation

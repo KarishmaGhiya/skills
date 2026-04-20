@@ -451,7 +451,7 @@ const audioContext = new AudioContext({ sampleRate: 24000 });
 
 ## Best Practices
 
-1. **Always use a specific EntraID token credential for production** — Never hardcode API keys. Use `DefaultAzureCredential` only for development and a specific  token credential such as `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production.
+1. **Always use a specific Microsoft Entra token credential for production** — Never hardcode API keys. Use `DefaultAzureCredential` only for development and a specific  token credential such as `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production.
 2. **Set both modalities** — Include `["text", "audio"]` for voice assistants
 3. **Use Azure Semantic VAD** — Better turn detection than basic server VAD
 4. **Handle all error types** — Connection, auth, and protocol errors

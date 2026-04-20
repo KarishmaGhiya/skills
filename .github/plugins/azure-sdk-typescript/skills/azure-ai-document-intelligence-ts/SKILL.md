@@ -29,7 +29,7 @@ DOCUMENT_INTELLIGENCE_API_KEY=<api-key>
 
 **Important**: This is a REST client. `DocumentIntelligence` is a **function**, not a class.
 
-### EntraID Token Credential
+### Microsoft Entra Token Credential
 
 ```typescript
 import DocumentIntelligence from "@azure-rest/ai-document-intelligence";

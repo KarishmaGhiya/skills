@@ -63,7 +63,7 @@ import { Client, Pool } from "pg";
 import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const credential = process.env.NODE_ENV === "development"
-  ? new DefaultAzureCredential()                          // local dev — uses CLI/VS credentials
+  ? new DefaultAzureCredential()                          // local dev — uses dev tool credentials
   : new ManagedIdentityCredential();                      // production — deterministic, no fallback chain
 // For system-assigned managed identity
 const credential = new DefaultAzureCredential();

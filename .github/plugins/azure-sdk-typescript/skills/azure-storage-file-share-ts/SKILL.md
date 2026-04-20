@@ -45,7 +45,7 @@ const client = new ShareServiceClient(
 );
 ```
 
-### Entra ID TokenCredential (Recommended)
+### Microsoft Entra Token Credential (Recommended)
 
 ```typescript
 import { ShareServiceClient } from "@azure/storage-file-share";
@@ -461,7 +461,7 @@ import {
 
 ## Best Practices
 
-1. **Use Entra ID TokenCredential for production** — Enable managed identity in Azure
+1. **Use Microsoft Entra Token Credential for production** — Enable managed identity in Azure
 2. **Set quotas on shares** — Prevent unexpected storage costs
 3. **Use streaming for large files** — `uploadStream`/`downloadToFile` for files > 256MB
 4. **Use ranges for partial updates** — More efficient than full file replacement
@@ -479,5 +479,5 @@ import {
 | `downloadToFile()` | ✅ | ❌ |
 | `downloadToBuffer()` | ✅ | ❌ |
 | SAS generation | ✅ | ❌ |
-| Entra ID TokenCredential | ✅ | ❌ |
+| Microsoft Entra Token Credential | ✅ | ❌ |
 | Anonymous/SAS access | ✅ | ✅ |

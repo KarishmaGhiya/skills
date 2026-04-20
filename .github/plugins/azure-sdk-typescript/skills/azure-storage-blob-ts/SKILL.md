@@ -31,14 +31,14 @@ AZURE_STORAGE_ACCOUNT_KEY=<account-key>
 
 ## Authentication
 
-### Entra ID TokenCredential (Recommended)
+### Microsoft Entra Token Credential (Recommended)
 
 ```typescript
 import { BlobServiceClient } from "@azure/storage-blob";
 import { DefaultAzureCredential, ManagedIdentityCredential } from "@azure/identity";
 
 const credential = process.env.NODE_ENV === "development"
-  ? new DefaultAzureCredential()                          // local dev — uses CLI/VS credentials
+  ? new DefaultAzureCredential()                          // local dev — uses dev tool credentials
   : new ManagedIdentityCredential();                      // production — deterministic, no fallback chain
 const accountName = process.env.AZURE_STORAGE_ACCOUNT_NAME!;
 const client = new BlobServiceClient(
@@ -441,7 +441,7 @@ import {
 
 ## Best Practices
 
-1. **Use Entra ID TokenCredential** — Prefer Entra ID TokenCredential over connection strings/keys. Use a specific credential (`ManagedIdentityCredential` or `WorkloadIdentityCredential`) in production. Use `DefaultAzureCredential` only for local development.
+1. **Use Microsoft Entra Token Credential** — Prefer `TokenCredential` over connection strings/keys. Use a specific credential (`ManagedIdentityCredential` or `WorkloadIdentityCredential`) in production. Use `DefaultAzureCredential` only for local development.
 2. **Use streaming for large files** — `uploadStream`/`downloadToFile` for files > 256MB
 3. **Set appropriate content types** — Use `setHTTPHeaders` for correct MIME types
 4. **Use SAS tokens for client access** — Generate short-lived tokens for browser uploads
@@ -460,5 +460,5 @@ import {
 | `downloadToBuffer()` | ✅ | ❌ |
 | `uploadData()` | ✅ | ✅ |
 | SAS generation | ✅ | ❌ |
-| Entra ID TokenCredential | ✅ | ❌ |
+| Microsoft Entra Token Credential | ✅ | ❌ |
 | Anonymous/SAS access | ✅ | ✅ |

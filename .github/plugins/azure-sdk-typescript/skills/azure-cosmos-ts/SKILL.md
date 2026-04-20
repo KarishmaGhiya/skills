@@ -38,7 +38,7 @@ COSMOS_KEY=<account-key>
 
 ## Authentication
 
-### AAD with Credential (Recommended)
+### Microsoft Entra Token Credential (Recommended)
 
 ```typescript
 import { CosmosClient } from "@azure/cosmos";
@@ -411,7 +411,7 @@ import {
 
 ## Best Practices
 
-1. **Use AAD authentication** — Prefer TokenCredential (e.g., `DefaultAzureCredential` or `ManagedIdentityCredential`) over keys.  Use `DefaultAzureCredential` only for local development and `ManagedIdentityCredential`or a specific credential in production.
+1. **Use AAD authentication** — Prefer `TokenCredential` (e.g., `DefaultAzureCredential` or `ManagedIdentityCredential`) over keys.  Use `DefaultAzureCredential` only for local development and `ManagedIdentityCredential`or a specific credential in production.
 2. **Always use parameterized queries** — Prevents injection, improves plan caching
 3. **Specify partition key** — Avoid cross-partition queries when possible
 4. **Use bulk operations** — For multiple writes, use `executeBulkOperations`

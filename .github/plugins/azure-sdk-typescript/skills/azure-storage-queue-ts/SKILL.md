@@ -31,7 +31,7 @@ AZURE_STORAGE_ACCOUNT_KEY=<account-key>
 
 ## Authentication
 
-### Entra ID TokenCredential (Recommended)
+### Microsoft Entra Token Credential (Recommended)
 
 ```typescript
 import { QueueServiceClient } from "@azure/storage-queue";
@@ -497,7 +497,7 @@ import {
 
 ## Best Practices
 
-1. **Use Entra ID TokenCredential** — Prefer AAD over connection strings/keys. Use `DefaultAzureCredential`only in development and specific credential in production.
+1. **Use Microsoft Entra Token Credential** — Prefer Microsoft Entra ID over connection strings/keys. Use `DefaultAzureCredential` only in development and specific credential in production.
 2. **Always delete after processing** — Prevent duplicate processing
 3. **Handle poison messages** — Move failed messages to a dead-letter queue
 4. **Use appropriate visibility timeout** — Set based on expected processing time
@@ -512,6 +512,6 @@ import {
 |---------|---------|---------|
 | `StorageSharedKeyCredential` | ✅ | ❌ |
 | SAS generation | ✅ | ❌ |
-| Entra ID TokenCredential | ✅ | ❌ |
+| Microsoft Entra Token Credential | ✅ | ❌ |
 | Anonymous/SAS access | ✅ | ✅ |
 | All message operations | ✅ | ✅ |

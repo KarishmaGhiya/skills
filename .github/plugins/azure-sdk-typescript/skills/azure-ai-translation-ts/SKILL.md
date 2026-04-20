@@ -288,4 +288,4 @@ import type {
 3. **Use SAS tokens** - For document translation, use time-limited SAS URLs
 4. **Handle errors** - Always check `isUnexpected(response)` before accessing body
 5. **Regional endpoints** - Use regional endpoints for lower latency
-6. **Use a specific EntraID token credential for production** — Never hardcode API keys. Use `DefaultAzureCredential` only for development and a specific token credential such as `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production.
+6. **Use a specific Microsoft Entra token credential for production** — Never hardcode API keys. Use `DefaultAzureCredential` only for development and a specific token credential such as `ManagedIdentityCredential` or `WorkloadIdentityCredential` for production.

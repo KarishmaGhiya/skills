@@ -301,7 +301,7 @@ import {
 
 ## Best Practices
 
-1. **Use Entra ID auth** - Use DefaultAzureCredential only when running locally, and a specific credential (e.g., ManagedIdentityCredential, WorkloadIdentityCredential) in production.
+1. **Use Microsoft Entra auth** - Use `DefaultAzureCredential` only when running locally, and a specific credential (e.g., `ManagedIdentityCredential`, `WorkloadIdentityCredential`) in production.
 2. **Register handlers before start** - Don't miss initial events
 3. **Use groups for channels** - Organize messages by topic/room
 4. **Handle reconnection** - Client auto-reconnects by default
