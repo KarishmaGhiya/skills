@@ -40,7 +40,7 @@ pip install agent-framework-azure-ai --pre
 export AZURE_AI_PROJECT_ENDPOINT="https://<project>.services.ai.azure.com/api/projects/<project-id>"
 export AZURE_AI_MODEL_DEPLOYMENT_NAME="gpt-4o-mini"
 export BING_CONNECTION_ID="your-bing-connection-id"  # For web search
-AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
+export AZURE_TOKEN_CREDENTIALS=prod # Required only if DefaultAzureCredential is used in production
 ```
 
 ## Authentication
